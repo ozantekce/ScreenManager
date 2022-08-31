@@ -2,14 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Screen : MonoBehaviour
+public class Screen : MonoBehaviour
 {
 
     public bool Opened { get; protected set; }
 
-    public abstract void Open();
+    public virtual void Open()
+    {
+        Opened = true;
+    }
 
-    public abstract void Close();
+    public virtual void Close()
+    {
+        Opened = false;
+    }
 
 
 

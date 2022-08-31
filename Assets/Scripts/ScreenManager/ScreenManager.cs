@@ -67,6 +67,7 @@ public class ScreenManager : MonoBehaviour
             willClose.Close();
             yield return new WaitUntil(() => !willClose.Opened);
             Debug.Log(willClose.name + " closed");
+            willClose.gameObject.SetActive(false);
         }
 
         _currentScreen = willOpen;
@@ -74,7 +75,7 @@ public class ScreenManager : MonoBehaviour
         willOpen.Open();
 
         yield return new WaitUntil(() => willOpen.Opened);
-
+        willOpen.gameObject.SetActive(true);
         Debug.Log(willOpen.name + " opened");
         _bloked = false;
 
@@ -96,6 +97,7 @@ public class ScreenManager : MonoBehaviour
         {
             willClose.Close();
             yield return new WaitUntil(() => !willClose.Opened);
+            willClose.gameObject.SetActive(false);
         }
 
         _currentPopUp = willOpen;
@@ -103,6 +105,7 @@ public class ScreenManager : MonoBehaviour
         willOpen.Open();
 
         yield return new WaitUntil(() => willClose.Opened);
+        willOpen.gameObject.SetActive(true);
 
         _bloked = false;
 

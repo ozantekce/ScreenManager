@@ -36,15 +36,17 @@ public class MainMenuScreen : Screen
 
         rectTransform = GetComponent<RectTransform>();
 
-        openingSequence = DOTween.Sequence();
-        CreateOpeningSequence();
-
-
-
     }
 
-    private void CreateOpeningSequence()
+    private void PlayOpeningAnimation()
     {
+
+        if(openingSequence != null)
+        {
+            openingSequence.Kill();
+        }
+
+        openingSequence = DOTween.Sequence();
 
         openingSequence.Join(playButton.GetComponent<RectTransform>()
             .DOAnchorPos(playButtonEndPos, 1.5f).SetEase(Ease.OutBounce));
@@ -77,28 +79,29 @@ public class MainMenuScreen : Screen
             playButton.enabled = true;
             settingsButton.enabled = true;
             quitButton.enabled = true;
-            Opened = true;
+            base.Open();
         }
         );
 
-        openingSequence.SetAutoKill(false);
 
     }
 
 
     public override void Close()
     {
-        gameObject.SetActive(false);
-        Opened = false;
+
+        base.Close();
     }
 
     public override void Open()
     {
 
         gameObject.SetActive(true);
-        openingSequence.Restart();
+        PlayOpeningAnimation();
 
     }
+
+
 
 
 
