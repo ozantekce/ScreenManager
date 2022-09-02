@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ScreenManager : MonoBehaviour
 {
+
     private static ScreenManager instance;
 
 
@@ -16,17 +17,13 @@ public class ScreenManager : MonoBehaviour
     private Dictionary<string, PopUp> _popUpDictionary;
 
     public Screen initialScreen;
-
     private Screen _currentScreen;
-
     private PopUp _currentPopUp;
 
-    private bool _bloked;
 
+    private List<Command> _commands = new List<Command>();
     private void Awake()
     {
-        _currentScreen = initialScreen;
-
         _screenDictionary = new Dictionary<string, Screen>();
         foreach (Screen s in _screens)
         {
@@ -41,95 +38,59 @@ public class ScreenManager : MonoBehaviour
             _popUpDictionary[s.name].gameObject.SetActive(false);
         }
         MakeSingleton();
+
+        LoadScreen(initialScreen.name);
+
     }
 
-    private void Start()
+
+
+    private Command _currentCommand;
+    private void Update()
     {
-        LoadScreen(_currentScreen.name);
+
+        if (_commands.Count <= 0)
+            return;
+        if (_currentCommand != null && !_currentCommand.Terminated())
+            return;
+
+        _currentCommand = _commands[0];
+        _currentCommand.Execute();
+        _commands.RemoveAt(0);
+
     }
+
 
     public void LoadScreen(string screenName)
     {
-        if (_bloked)
-            return;
-        
-        ClosePopUp();
 
-        StartCoroutine(LoadScreenRoutine(_currentScreen, _screenDictionary[screenName]));
-
+        if (_currentPopUp != null)
+            _commands.Add(new CloseCommand(_currentPopUp));
+        if(_currentScreen != null)
+            _commands.Add(new CloseCommand(_currentScreen));
+        _currentScreen =_screenDictionary[screenName];
+        _commands.Add(new OpenCommand(_currentScreen));
     }
 
-    private IEnumerator LoadScreenRoutine(Screen willClose, Screen willOpen)
-    {
-        _bloked = true;
-        if(willClose != null)
-        {
-            willClose.Close();
-            yield return new WaitUntil(() => !willClose.Opened);
-            Debug.Log(willClose.name + " closed");
-            willClose.gameObject.SetActive(false);
-        }
-
-        _currentScreen = willOpen;
-
-        willOpen.Open();
-
-        yield return new WaitUntil(() => willOpen.Opened);
-        willOpen.gameObject.SetActive(true);
-        Debug.Log(willOpen.name + " opened");
-        _bloked = false;
-
-    }
 
     public void OpenPopUp(string popUpName)
     {
-        if (_bloked)
-            return;
-
-        StartCoroutine(OpenPopUpRoutine(_currentPopUp, _popUpDictionary[popUpName]));
-
-    }
-
-    private IEnumerator OpenPopUpRoutine(PopUp willClose, PopUp willOpen)
-    {
-        _bloked = true;
-        if (willClose != null)
-        {
-            willClose.Close();
-            yield return new WaitUntil(() => !willClose.Opened);
-            willClose.gameObject.SetActive(false);
-        }
-
-        _currentPopUp = willOpen;
-
-        willOpen.Open();
-
-        yield return new WaitUntil(() => willClose.Opened);
-        willOpen.gameObject.SetActive(true);
-
-        _bloked = false;
-
+        if (_currentPopUp != null)
+            _commands.Add(new CloseCommand(_currentPopUp));
+        _currentPopUp = _popUpDictionary[popUpName];
+        _commands.Add(new OpenCommand(_currentPopUp));
     }
 
     public void ClosePopUp()
     {
-        StartCoroutine(ClosePopUpRoutine());
+        if(_currentPopUp!=null)
+            _commands.Add(new CloseCommand(_currentPopUp));
     }
-    private IEnumerator ClosePopUpRoutine()
+
+    public void QuitApplication()
     {
-        _bloked = true;
-
-        if (_currentPopUp != null)
-        {
-            _currentPopUp.Close();
-            yield return new WaitUntil(() => !_currentPopUp.Opened);
-        }
-        _currentPopUp = null;
-
-        _bloked = false;
-
+        Application.Quit();
     }
-
 
 
     private void MakeSingleton()
@@ -148,8 +109,67 @@ public class ScreenManager : MonoBehaviour
     #region GetterSetter
 
     public static ScreenManager Instance { get => instance; }
+    public Screen CurrentScreen { get => _currentScreen; }
+    public PopUp CurrentPopUp { get => _currentPopUp;}
+
 
     #endregion
 
 
+
+
+    private abstract class Command
+    {
+        protected IScreenElement element;
+
+        public Command(IScreenElement element)
+        {
+            this.element = element;
+        }
+
+        public abstract void Execute();
+
+        public abstract bool Terminated();
+    }
+
+
+    private class OpenCommand : Command
+    {
+        public OpenCommand(IScreenElement element) : base(element)
+        {
+        }
+
+        public override void Execute()
+        {
+            element.Open();
+        }
+
+        public override bool Terminated()
+        {
+            return element.Opened;
+        }
+    }
+
+    private class CloseCommand : Command
+    {
+        public CloseCommand(IScreenElement element) : base(element)
+        {
+        }
+
+        public override void Execute()
+        {
+            element.Close();
+        }
+
+        public override bool Terminated()
+        {
+            return !element.Opened;
+        }
+
+
+    }
+
+
 }
+
+
