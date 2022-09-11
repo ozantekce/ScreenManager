@@ -85,6 +85,7 @@ public class ScreenManager : MonoBehaviour
     {
         if(_currentPopUp!=null)
             _commands.Add(new CloseCommand(_currentPopUp));
+		_currentPopUp = null;
     }
 
     public void QuitApplication()
