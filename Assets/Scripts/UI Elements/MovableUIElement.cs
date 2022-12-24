@@ -54,7 +54,7 @@ public class MovableUIElement : MonoBehaviour
 
         _upFrame = upFrame;
 
-
+        _upFrame.transform.localScale = Vector3.one;
 
 
         if (_addCloseSymbol)
@@ -72,10 +72,17 @@ public class MovableUIElement : MonoBehaviour
 
             EventTrigger.Entry pointerDownClose = new EventTrigger.Entry();
             pointerDownClose.eventID = EventTriggerType.PointerDown;
-            pointerDownClose.callback.AddListener(delegate { this.gameObject.SetActive(false); });
+            pointerDownClose.callback.AddListener(delegate {
+
+                ScreenManager.Instance.ClosePopUp(gameObject.name);
+            
+            });
             eventTriggerClose.triggers.Add(pointerDownClose);
 
+            closeSymbol.transform.localScale = Vector3.one;
         }
+
+
 
 
     }

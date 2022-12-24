@@ -46,8 +46,13 @@ public class ScreenManager : MonoBehaviour
         }
         MakeSingleton();
 
-        LoadScreen(initialScreen.name);
+        
 
+    }
+
+    private void Start()
+    {
+        LoadScreen(initialScreen.name);
     }
 
 

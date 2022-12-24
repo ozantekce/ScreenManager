@@ -5,20 +5,18 @@ using UnityEngine;
 public class Screen : MonoBehaviour,IScreenElement
 {
 
-    public bool Opened { get; protected set; }
+    public bool Opened { get; set; }
+    public MonoBehaviour MonoBehaviour { get => this; set { } }
 
-    public virtual void Open()
-    {
-        Opened = true;
-        gameObject.SetActive(true);
-    }
+    private IScreenElement.Method _beforeOpen;
+    private IScreenElement.Method _afterOpen;
 
-    public virtual void Close()
-    {
-        Opened = false;
-        gameObject.SetActive(false);
-    }
+    private IScreenElement.Method _beforeClose;
+    private IScreenElement.Method _afterClose;
 
-
+    public IScreenElement.Method BeforeOpen { get => _beforeOpen; set => _beforeOpen = value; }
+    public IScreenElement.Method AfterOpen { get => _afterOpen; set => _afterOpen = value; }
+    public IScreenElement.Method BeforeClose { get => _beforeClose; set => _beforeClose = value; }
+    public IScreenElement.Method AfterClose { get => _afterClose; set => _afterClose = value; }
 
 }
