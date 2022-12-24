@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class PopUp : MonoBehaviour,IScreenElement
+public class PopUp : MonoBehaviour,IScreenElement, IPointerDownHandler
 {
 
     public bool Opened { get; protected set; }
@@ -20,5 +21,12 @@ public class PopUp : MonoBehaviour,IScreenElement
         Opened=false;
         gameObject.SetActive(false);
     }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        transform.SetAsLastSibling();
+    }
+
+
 
 }

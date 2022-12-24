@@ -19,12 +19,18 @@ public class ScreenManager : MonoBehaviour
 
     public Screen initialScreen;
     private Screen _currentScreen;
-    private PopUp _currentPopUp;
+
+
+
+    private ISet<PopUp> _openedPopUps;
 
 
     private List<Command> _commands = new List<Command>();
     private void Awake()
     {
+
+        _openedPopUps = new HashSet<PopUp>();
+
         _screenDictionary = new Dictionary<string, Screen>();
         foreach (Screen s in _screens)
         {
@@ -69,9 +75,6 @@ public class ScreenManager : MonoBehaviour
 
     public void LoadScreen(string screenName)
     {
-
-        if (_currentPopUp != null)
-            _commands.Add(new CloseCommand(_currentPopUp));
         if(_currentScreen != null)
             _commands.Add(new CloseCommand(_currentScreen));
         _currentScreen =_screenDictionary[screenName];
@@ -81,16 +84,29 @@ public class ScreenManager : MonoBehaviour
 
     public void OpenPopUp(string popUpName)
     {
+        /*
         if (_currentPopUp != null)
             _commands.Add(new CloseCommand(_currentPopUp));
         _currentPopUp = _popUpDictionary[popUpName];
-        _commands.Add(new OpenCommand(_currentPopUp));
+        */
+        PopUp openPopUp = _popUpDictionary[popUpName];
+        _commands.Add(new OpenCommand(openPopUp));
+        
+        _openedPopUps.Add(openPopUp);
+
     }
 
-    public void ClosePopUp()
+    public void ClosePopUp(string popUpName)
     {
+        /*
         if(_currentPopUp!=null)
             _commands.Add(new CloseCommand(_currentPopUp));
+        */
+        PopUp closePopUp = _popUpDictionary[popUpName];
+        _commands.Add(new CloseCommand(closePopUp));
+
+        _openedPopUps.Remove(closePopUp);
+
     }
 
     public void QuitApplication()
@@ -116,7 +132,6 @@ public class ScreenManager : MonoBehaviour
 
     public static ScreenManager Instance { get => instance; }
     public Screen CurrentScreen { get => _currentScreen; }
-    public PopUp CurrentPopUp { get => _currentPopUp;}
 
 
     #endregion
