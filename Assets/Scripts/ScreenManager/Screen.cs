@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Screen : MonoBehaviour,IScreenElement
+public class Screen : MonoBehaviour, IScreenElement
 {
 
     public bool Opened { get; set; }
@@ -19,4 +19,8 @@ public class Screen : MonoBehaviour,IScreenElement
     public IScreenElement.Method BeforeClose { get => _beforeClose; set => _beforeClose = value; }
     public IScreenElement.Method AfterClose { get => _afterClose; set => _afterClose = value; }
 
+    public virtual void Configurations()
+    {
+
+    }
 }

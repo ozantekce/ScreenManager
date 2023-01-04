@@ -34,6 +34,7 @@ public class ScreenManager : MonoBehaviour
         _screenDictionary = new Dictionary<string, Screen>();
         foreach (Screen s in _screens)
         {
+            s.Configurations();
             _screenDictionary.Add(s.name, s);
             _screenDictionary[s.name].gameObject.SetActive(false);
         }
@@ -41,6 +42,7 @@ public class ScreenManager : MonoBehaviour
         _popUpDictionary = new Dictionary<string, PopUp>();
         foreach (PopUp s in _popUps)
         {
+            s.Configurations();
             _popUpDictionary.Add(s.name, s);
             _popUpDictionary[s.name].gameObject.SetActive(false);
         }
@@ -94,7 +96,12 @@ public class ScreenManager : MonoBehaviour
             _commands.Add(new CloseCommand(_currentPopUp));
         _currentPopUp = _popUpDictionary[popUpName];
         */
+
         PopUp openPopUp = _popUpDictionary[popUpName];
+
+        if (_openedPopUps.Contains(openPopUp))
+            return;
+
         _commands.Add(new OpenCommand(openPopUp));
         
         _openedPopUps.Add(openPopUp);
@@ -114,6 +121,39 @@ public class ScreenManager : MonoBehaviour
 
     }
 
+    public void CloseAllPopUps()
+    {
+        foreach (PopUp popUp in _openedPopUps)
+        {
+            _commands.Add(new CloseCommand(popUp));
+
+            _openedPopUps.Remove(popUp);
+        }
+    }
+
+    private List<PopUp> closeList = new List<PopUp>();
+    public void CloseAllPopUpWithout(string popUpName)
+    {
+        closeList.Clear();
+        foreach (PopUp popUp in _openedPopUps)
+        {
+            if(popUp.name == popUpName)
+            {
+                continue;
+            }
+            _commands.Add(new CloseCommand(popUp));
+            closeList.Add(popUp);
+            
+        }
+
+        foreach (PopUp popUp in closeList)
+        {
+            _openedPopUps.Remove(popUp);
+        }
+
+
+    }
+
     public void QuitApplication()
     {
         Application.Quit();
@@ -122,15 +162,7 @@ public class ScreenManager : MonoBehaviour
 
     private void MakeSingleton()
     {
-        if (instance != null)
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
+        instance = this;
     }
 
     #region GetterSetter

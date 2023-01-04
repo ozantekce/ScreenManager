@@ -26,7 +26,7 @@ public class PopUpTest : PopUp
     private IEnumerator beforeOpen()
     {
         Debug.Log("before open start");
-        transform.localScale = Vector3.one;
+        transform.localScale = Vector3.zero;
         yield return null;
         Debug.Log("before open over");
     }

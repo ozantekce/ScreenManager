@@ -25,4 +25,10 @@ public class PopUp : MonoBehaviour,IScreenElement, IPointerDownHandler
     public IScreenElement.Method BeforeClose { get => _beforeClose; set => _beforeClose = value; }
     public IScreenElement.Method AfterClose { get => _afterClose; set => _afterClose = value; }
 
+
+    public virtual void Configurations()
+    {
+
+    }
+
 }
